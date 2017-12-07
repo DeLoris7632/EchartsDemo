@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<!-- <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"> -->
+<head>
+<meta charset="utf-8"/>
+<!-- 引入 ECharts 文件 -->
+<script src="js/echarts.min.js"></script>
+<script src="/js/jquery-3.2.1.min.js"></script>
+
+<title>显示</title>
+</head>
+<body>
+	<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+	<!-- <div id="main" th:style="width:600px; height:400px;"></div> -->
+	<!-- <div id="myChart" style="width:600px; height:400px;"></div> -->
+	<div id="main" style="width: 600px;height:400px;"></div>
+</body>
+<script type="text/javascript">
+	var myChart = echarts.init(document.getElementById('main'));
+	// 显示标题，图例和空的坐标轴
+	myChart.setOption({
+	    title: {
+	        text: '异步数据加载示例'
+	    },
+	    tooltip: {},
+	    legend: {
+	        data:['销量']
+	    },
+	    xAxis: {
+	        data: []
+	    },
+	    yAxis: {},
+	    series: [{
+	        name: '销量',
+	        type: 'bar',
+	        data: []
+	    }]
+	});
+			
+	
+	var ids=[];
+	var ages=[];
+	$(function(){
+		$.ajax({
+			url: "/find",
+			
+			type: "post",
+			dataType: "json",
+			success:function(data){
+				var lis=eval(data);
+				 for(var to in lis){
+					ids.push(lis[to].id);
+					ages.push(lis[to].age);
+					
+					 // 使用刚指定的配置项和数据显示图表。
+				    myChart.setOption({
+				    	xAxis:{
+				    		data:ids
+				    	},
+				    	series: [{
+                            // 根据名字对应到相应的系列
+                            name: '销量',
+                            data: ages
+                        }]
+				    });	
+				} 
+				
+			},
+			error : function(errorMsg) {
+	             //请求失败时执行该函数
+	         alert("图表请求数据失败!");
+	         myChart.hideLoading();
+	         }
+			
+		});
+	});
+	
+	
+
+    
+
+</script>
+</html>
